@@ -84,7 +84,7 @@ def makePayment(pin, sessionId, phone):
     user = get_user(agent.id)
     if user.is_verified(pin):
         data = {
-            "AgentId":agent.id,
+            "AgentId":f"{agent.id}",
             "AgentName":agent.name,
             "reference": session.reference,
             "Amount": session.amount,
