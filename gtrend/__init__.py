@@ -34,3 +34,7 @@ from gtrend.api.routes import api
 # TODO: 
 # You can register more blueprints here
 app.register_blueprint(api)
+
+@app.route('/')
+def index():
+    return {'name':'Global Trend USSD Service'}
