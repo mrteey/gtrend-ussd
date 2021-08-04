@@ -1,1 +1,2 @@
-SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/gtrend'
+import os
+SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
