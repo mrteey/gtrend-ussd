@@ -1,0 +1,8 @@
+
+#FLASK_SETUP
+.flask_setup
+
+/venv
+*.pyc
+*.py.mako
+*.ini

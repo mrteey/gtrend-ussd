@@ -1,0 +1,2 @@
+SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/gtrend'
+SQLALCHEMY_TRACK_MODIFICATIONS = True
