@@ -52,7 +52,7 @@ def confirmReference(reference, sessionId, phone):
         response  = f"CON Invalid reference, try again!"
     elif amount and amount > 0:
         response  = f"CON Client: {customer}\nAmount: {amount}\nDescription:{description}\nPick an option to continue:\n"
-        response += "1. Purchase"
+        response += "1. Purchase\n"
         response += "2. Deposit\n"
         response += "3. Final Pay\n"
         update_session(sessionId, 'choice', customer=customer, description=description, reference=reference, amount=amount)
@@ -113,9 +113,8 @@ def makePayment(pin, sessionId, phone):
             }
         payment = requests.post(api_base+endpoints.get('notification'), headers={'Authorization':'bearer'f' {bearer}', 'TerminalId':terminalId}, json=data)
         payment = payment.json()
-        print(payment)
         if payment.get('billerReference'):
-            add_transaction(session.id, session.agent_id, session.reference, session.amount, session.transaction_type, get_current_date())
+            add_transaction(session.id, agent.id, session.reference, session.amount, session.transaction_type, get_current_date())
             update_session(sessionId, "completed")
             response  = f"END Amount paid successfully!\n\n"
             response  = f"******Receipt******:\n"
