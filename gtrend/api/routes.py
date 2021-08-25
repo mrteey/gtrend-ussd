@@ -99,7 +99,7 @@ def makePayment(pin, sessionId, phone):
             "reference": session.reference.replace('IN', ''),
             "Amount": session.amount,
             "Currency": "NGN",
-            "type": session.transaction_type,
+            "type": 'invoice',
             "TransactionReference": session.reference,
             "RetrievalReferenceNumber": f"IN{session.reference}",
             "MaskedPAN": "MaskedPAN",
@@ -114,7 +114,7 @@ def makePayment(pin, sessionId, phone):
         payment = requests.post(api_base+endpoints.get('notification'), headers={'Authorization':'bearer'f' {bearer}', 'TerminalId':terminalId}, json=data)
         payment = payment.json()
         print(payment)
-        if payment.get('status') == True:
+        if payment.get('billerReference'):
             add_transaction(session.id, session.agent_id, session.reference, session.amount, session.transaction_type, get_current_date())
             update_session(sessionId, "completed")
             response  = f"END Amount paid successfully!\n\n"
