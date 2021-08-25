@@ -1,8 +1,8 @@
 from gtrend.model import *
 
 def add_transaction(session_id, agent_id, reference, amount, transaction_type, created_at):
-    new_session = Transaction(session_id=session_id, agent_id=agent_id, reference=reference, amount=amount, transaction_type=transaction_type, created_at=created_at)
-    db.session.add(new_session)
+    new_transaction = Transaction(session_id=session_id, agent_id=agent_id, reference=reference, amount=amount, transaction_type=transaction_type, created_at=created_at)
+    db.session.add(new_transaction)
     db.session.commit()
     return True
 
