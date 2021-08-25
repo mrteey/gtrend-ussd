@@ -52,9 +52,9 @@ def confirmReference(reference, sessionId, phone):
         response  = f"CON Invalid reference, try again!"
     elif amount and amount > 0:
         response  = f"CON Client: {customer}\nAmount: {amount}\nDescription:{description}\nPick an option to continue:\n"
-        response += "1. Final Pay\n"
+        response += "1. Purchase"
         response += "2. Deposit\n"
-        response += "3. Purchase"
+        response += "3. Final Pay\n"
         update_session(sessionId, 'choice', customer=customer, description=description, reference=reference, amount=amount)
     else:
         response  = f"END This reference has already been paid"
@@ -62,13 +62,13 @@ def confirmReference(reference, sessionId, phone):
 
 def choice(text, sessionId, phone):
     if text.split('*')[-1] == '1':
-        update_session(sessionId, 'makePayment', transaction_type='finalpay')
+        update_session(sessionId, 'makePayment', transaction_type='purchase')
         return finalpay(None, sessionId, phone)
     elif text.split('*')[-1] == '2':
         update_session(sessionId, 'makePayment', transaction_type='deposit')
         return deposit(text, sessionId, phone)
     elif text.split('*')[-1] == '3':
-        update_session(sessionId, 'makePayment', transaction_type='purchase')
+        update_session(sessionId, 'makePayment', transaction_type='finalpay')
         return finalpay(None, sessionId, phone)
     else:
         return choice(text, sessionId, phone)
