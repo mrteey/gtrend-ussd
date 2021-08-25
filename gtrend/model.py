@@ -23,7 +23,8 @@ class User(db.Model):
 class Agent(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
-    phone = db.Column(db.String)
+    phone = db.Column(db.String, unique=True)
+    email = db.Column(db.String, unique=True)
 
 class Sessions(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -33,3 +34,13 @@ class Sessions(db.Model):
     description = db.Column(db.String)
     reference = db.Column(db.String)
     amount = db.Column(db.Integer)
+    transaction_type = db.Column(db.String)
+
+class Transaction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    session_id = db.Column(db.Integer, db.ForeignKey('sessions.id'))
+    agent_id = db.Column(db.Integer, db.ForeignKey('agent.id'))
+    amount = db.Column(db.Integer)
+    transaction_type = db.Column(db.String)
+    created_at = db.Column(db.String)
+    reference = db.Column(db.String)
