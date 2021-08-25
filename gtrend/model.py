@@ -34,6 +34,7 @@ class Sessions(db.Model):
     description = db.Column(db.String)
     reference = db.Column(db.String)
     amount = db.Column(db.Integer)
+    charges = db.Column(db.Integer)
     transaction_type = db.Column(db.String)
 
 class Transaction(db.Model):
@@ -41,6 +42,7 @@ class Transaction(db.Model):
     session_id = db.Column(db.Integer, db.ForeignKey('sessions.id'))
     agent_id = db.Column(db.Integer, db.ForeignKey('agent.id'))
     amount = db.Column(db.Integer)
+    charges = db.Column(db.Integer)
     transaction_type = db.Column(db.String)
     created_at = db.Column(db.String)
     reference = db.Column(db.String)

@@ -51,11 +51,11 @@ def confirmReference(reference, sessionId, phone):
     if status == 'false':
         response  = f"CON Invalid reference, try again!"
     elif amount and amount > 0:
-        response  = f"CON Client: {customer}\nAmount: {amount}\nDescription:{description}\nPick an option to continue:\n"
+        response  = f"CON Client: {customer}\nAmount: {amount}\nDescription:{description}\nCharges: {getCharges(amount)}\nPick an option to continue:\n"
         response += "1. Purchase\n"
         response += "2. Deposit\n"
         response += "3. Final Pay\n"
-        update_session(sessionId, 'choice', customer=customer, description=description, reference=reference, amount=amount)
+        update_session(sessionId, 'choice', customer=customer, description=description, reference=reference, amount=amount, charges=getCharges(amount))
     else:
         response  = f"END This reference has already been paid"
     return response
@@ -114,22 +114,36 @@ def makePayment(pin, sessionId, phone):
         payment = requests.post(api_base+endpoints.get('notification'), headers={'Authorization':'bearer'f' {bearer}', 'TerminalId':terminalId}, json=data)
         payment = payment.json()
         if payment.get('billerReference'):
-            add_transaction(session.id, agent.id, session.reference, session.amount, session.transaction_type, get_current_date())
+            add_transaction(session.id, agent.id, session.reference, session.amount, session.charges, session.transaction_type, get_current_date())
             update_session(sessionId, "completed")
-            response  = f"END Amount paid successfully!\n\n"
-            response  = f"******Receipt******:\n"
-            response  = f"Global Trend Investments Ltd\n"
-            response  = f"Client: {session.customer}\n"
-            response  = f"Amount Paid: {session.amount}\n"
-            response  = f"Reference: {session.reference}\n"
-            response  = f"Date: {get_current_date()}\n"
-            response  = f"******Receipt******:\n"
+            response  = f"END ******Receipt******\n"
+            response  += f"Client: {session.customer}\n"
+            response  += f"Amount Paid: {session.amount}\n"
+            response  += f"Charges: {session.charges}\n"
+            response  += f"Total: {session.charges+session.amount}\n"
+            response  += f"Reference: {session.reference}\n"
+            response  += f"Date: {get_current_date()}\n"
+            response  += f"powered by: Global Trend\n"
         else:
             response  = f"END Sorry we could not complete your transaction!"
     else:
         response  = f"CON Invalid pin, try again!"
     return response
 
+def report(date=None):
+    # if date:
+    pass
+
 def get_current_date():
     date = datetime.datetime.now()
     return date.strftime("%Y-%m-%d")
+
+def getCharges(amount):
+    if amount <= 500:
+        return 30
+    elif amount <= 1000:
+        return 50
+    elif amount <= 20000:
+        return 100
+    else:
+        return 200
