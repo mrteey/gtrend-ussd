@@ -116,7 +116,14 @@ def makePayment(pin, sessionId, phone):
         if payment.get('status') == True:
             add_transaction(session.id, session.agent_id, session.reference, session.amount, session.transaction_type, get_current_date())
             update_session(sessionId, "completed")
-            response  = f"END Amount paid successfully!"
+            response  = f"END Amount paid successfully!\n\n"
+            response  = f"******Receipt******:\n"
+            response  = f"Global Trend Investments Ltd\n"
+            response  = f"Client: {session.customer}\n"
+            response  = f"Amount Paid: {session.amount}\n"
+            response  = f"Reference: {session.reference}\n"
+            response  = f"Date: {get_current_date()}\n"
+            response  = f"******Receipt******:\n"
         else:
             response  = f"END Sorry we could not complete your transaction!"
     else:
