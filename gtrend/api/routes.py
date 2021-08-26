@@ -49,12 +49,9 @@ def confirmReference(_reference, sessionId, phone):
     reference=invoice.get('reference')
     status = invoice.get("status")
     if status == 'false':
-        print(_reference)
         transaction = getTransaction(_reference)
-        print(transaction)
         if transaction:
             response = getReceipt(transaction)
-            print(response)
         else:
             response  = f"CON Invalid reference, try again!"
     elif amount and amount > 0:
