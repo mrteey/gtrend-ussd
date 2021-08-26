@@ -55,7 +55,7 @@ def confirmReference(_reference, sessionId, phone):
         else:
             response  = f"CON Invalid reference, try again!"
     elif amount and amount > 0:
-        response  = f"CON Client: {customer}\nAmount: {amount}\nDescription:{description}\nCharges: {getCharges(amount)}\nPick an option to continue:\n"
+        response  = f"CON Client: {customer}\nAmount: {amount}\nCharges: {getCharges(amount)}\nPick an option to continue:\n"
         response += "1. Purchase\n"
         response += "2. Deposit\n"
         response += "3. Final Pay\n"
