@@ -4,9 +4,9 @@ api
 --------------
 '''
 from flask import Blueprint, request, render_template, redirect, url_for
-import requests, datetime
+import requests
 
-from gtrend.methods import add_session, update_session, get_session, get_agent, get_user, add_transaction
+from gtrend.methods import add_session, update_session, get_session, get_user, add_transaction, getCurrentDate, getReceipt, getTransaction, getCharges
 from gtrend import app
 
 api = Blueprint('api', __name__, url_prefix='/api')
@@ -24,7 +24,7 @@ def dispatch():
     sessionId = request.form.get('sessionId')
     networkCode = request.form.get('networkCode')
     text = request.form.get('text')
-    agent = get_agent(phoneNumber)
+    agent = get_user(phoneNumber)
     session = get_session(sessionId)
     if agent:
         if session:
@@ -37,10 +37,10 @@ def start(sessionId, phone, name):
     response  = f"CON Welcome {name}\nPlease enter a transaction reference\n"
     return response
     
-def confirmReference(reference, sessionId, phone):
-    reference = reference.split('*')[-1]
-    reference = reference.strip().replace('IN', '')
-    invoice = requests.get(api_base+endpoints.get('lookup'), headers={'Authorization':'bearer'f' {bearer}', 'TerminalId':terminalId}, params={"reference":reference, "type":"invoice"})
+def confirmReference(_reference, sessionId, phone):
+    _reference = _reference.split('*')[-1]
+    _reference = _reference.strip().replace('IN', '')
+    invoice = requests.get(api_base+endpoints.get('lookup'), headers={'Authorization':'bearer'f' {bearer}', 'TerminalId':terminalId}, params={"reference":_reference, "type":"invoice"})
     invoice = invoice.json()
     total = invoice.get("totalAmount")
     amount = invoice.get("outStandingAmount")
@@ -49,7 +49,14 @@ def confirmReference(reference, sessionId, phone):
     reference=invoice.get('reference')
     status = invoice.get("status")
     if status == 'false':
-        response  = f"CON Invalid reference, try again!"
+        print(_reference)
+        transaction = getTransaction(_reference)
+        print(transaction)
+        if transaction:
+            response = getReceipt(transaction)
+            print(response)
+        else:
+            response  = f"CON Invalid reference, try again!"
     elif amount and amount > 0:
         response  = f"CON Client: {customer}\nAmount: {amount}\nDescription:{description}\nCharges: {getCharges(amount)}\nPick an option to continue:\n"
         response += "1. Purchase\n"
@@ -90,9 +97,8 @@ def deposit(text, sessionId, phone):
 def makePayment(pin, sessionId, phone):
     session = get_session(sessionId)
     pin = pin.split('*')[-1]
-    agent = get_agent(phone=phone)
-    user = get_user(agent.id)
-    if user.is_verified(pin):
+    agent = get_user(phone=phone)
+    if agent.is_verified(pin):
         data = {
             "AgentId":f"{agent.id}",
             "AgentName":agent.name,
@@ -109,41 +115,17 @@ def makePayment(pin, sessionId, phone):
             "StatusDescription": session.description,
             "STAN": "STAN",
             "CardExpiry": "CardExpiry",
-            "PaymentDate": get_current_date()
+            "PaymentDate": getCurrentDate()
             }
         payment = requests.post(api_base+endpoints.get('notification'), headers={'Authorization':'bearer'f' {bearer}', 'TerminalId':terminalId}, json=data)
         payment = payment.json()
-        if payment.get('billerReference'):
-            add_transaction(session.id, agent.id, session.reference, session.amount, session.charges, session.transaction_type, get_current_date())
+        receipt = payment.get('billerReference')
+        if receipt:
+            add_transaction(session.id, agent.id, session.reference, receipt, session.amount, session.charges, session.transaction_type, getCurrentDate())
             update_session(sessionId, "completed")
-            response  = f"END ******Receipt******\n"
-            response  += f"Client: {session.customer}\n"
-            response  += f"Amount Paid: {session.amount}\n"
-            response  += f"Charges: {session.charges}\n"
-            response  += f"Total: {session.charges+session.amount}\n"
-            response  += f"Reference: {session.reference}\n"
-            response  += f"Date: {get_current_date()}\n"
-            response  += f"powered by: Global Trend\n"
+            response = getReceipt(session)
         else:
             response  = f"END Sorry we could not complete your transaction!"
     else:
         response  = f"CON Invalid pin, try again!"
     return response
-
-def report(date=None):
-    # if date:
-    pass
-
-def get_current_date():
-    date = datetime.datetime.now()
-    return date.strftime("%Y-%m-%d")
-
-def getCharges(amount):
-    if amount <= 500:
-        return 30
-    elif amount <= 1000:
-        return 50
-    elif amount <= 20000:
-        return 100
-    else:
-        return 200
