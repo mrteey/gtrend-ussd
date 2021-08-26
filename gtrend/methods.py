@@ -5,7 +5,7 @@ def add_transaction(session_id, agent_id, reference, receipt, amount, charges, t
     new_transaction = Transaction(session_id=session_id, agent_id=agent_id, reference=reference, charges=charges, amount=amount, transaction_type=transaction_type, created_at=created_at)
     db.session.add(new_transaction)
     db.session.commit()
-    return True
+    return new_transaction
 
 def add_session(session_id):
     new_session = Sessions(session_id=session_id, stage='confirmReference')
@@ -61,3 +61,7 @@ def getCharges(amount):
 def getTransaction(reference):
     transaction = Transaction.query.filter(Transaction.reference.ilike(f'%{reference}%')).first()
     return transaction
+
+def getCurrentTimestamp():
+    timestamp = datetime.datetime.now().timestamp()
+    return int(timestamp)

@@ -6,7 +6,7 @@ api
 from flask import Blueprint, request, render_template, redirect, url_for
 import requests
 
-from gtrend.methods import add_session, update_session, get_session, get_user, add_transaction, getCurrentDate, getReceipt, getTransaction, getCharges
+from gtrend.methods import add_session, update_session, get_session, get_user, add_transaction, getCurrentDate, getReceipt, getTransaction, getCharges, getCurrentTimestamp
 from gtrend import app
 
 api = Blueprint('api', __name__, url_prefix='/api')
@@ -100,13 +100,13 @@ def makePayment(pin, sessionId, phone):
     agent = get_user(phone=phone)
     if agent.is_verified(pin):
         data = {
-            "AgentId":f"{agent.id}",
+            "AgentId":f"GlobalTrend",
             "AgentName":agent.name,
             "reference": session.reference.replace('IN', ''),
             "Amount": session.amount,
             "Currency": "NGN",
             "type": 'invoice',
-            "TransactionReference": session.reference,
+            "TransactionReference": getCurrentTimestamp(),
             "RetrievalReferenceNumber": f"IN{session.reference}",
             "MaskedPAN": "MaskedPAN",
             "CardScheme": "CardScheme",
@@ -121,9 +121,9 @@ def makePayment(pin, sessionId, phone):
         payment = payment.json()
         receipt = payment.get('billerReference')
         if receipt:
-            add_transaction(session.id, agent.id, session.reference, receipt, session.amount, session.charges, session.transaction_type, getCurrentDate())
+            transaction = add_transaction(session.id, agent.id, session.reference, receipt, session.amount, session.charges, session.transaction_type, getCurrentDate())
             update_session(sessionId, "completed")
-            response = getReceipt(session)
+            response = getReceipt(transaction)
         else:
             response  = f"END Sorry we could not complete your transaction!"
     else:
