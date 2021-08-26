@@ -118,7 +118,7 @@ def makePayment(pin, sessionId, phone):
         payment = payment.json()
         receipt = payment.get('billerReference')
         if receipt:
-            transaction = add_transaction(session.id, agent.id, session.reference, receipt, session.amount, session.charges, session.transaction_type, getCurrentDate())
+            transaction = add_transaction(session.id, agent.id, session.reference, receipt, session.description, session.customer, session.amount, session.charges, session.transaction_type, getCurrentDate())
             update_session(sessionId, "completed")
             response = getReceipt(transaction)
         else:
