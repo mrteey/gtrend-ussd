@@ -12,6 +12,8 @@ import os
 
 from flask_migrate import Migrate
 
+from flask_cors import CORS
+
 #instance of app
 app = Flask(__name__, instance_relative_config=False)
 
@@ -25,6 +27,8 @@ app.config.from_object(os.environ.get('config'))
 db.init_app(app)
 
 migrate = Migrate(app, db)
+
+CORS(app)
 
 #TODO: 
 # Modify this import to reflect your desired blueprint

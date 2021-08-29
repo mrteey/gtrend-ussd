@@ -1,5 +1,6 @@
 from gtrend.model import *
 import datetime
+from sqlalchemy import func, or_, and_
 
 def add_transaction(session_id, agent_id, reference, receipt, description, customer, amount, charges, transaction_type, created_at):
     new_transaction = Transaction(session_id=session_id, agent_id=agent_id, receipt=receipt, description=description, customer=customer, reference=reference, charges=charges, amount=amount, transaction_type=transaction_type, created_at=created_at)
@@ -25,7 +26,7 @@ def get_session(session_id):
     return Sessions.query.filter_by(session_id=session_id).first()
 
 def get_user(phone):
-    return User.query.filter_by(phone=phone).first()
+    return User.query.filter(User.phone.ilike(f'%{phone[1:]}%')).first()
 
 
 def report(date=None):
@@ -59,7 +60,8 @@ def getCharges(amount):
         return 200
 
 def getTransaction(reference):
-    transaction = Transaction.query.filter(Transaction.reference.ilike(f'%{reference}%')).first()
+    # reference can either be invoice reference or receipt number
+    transaction = Transaction.query.filter(or_(Transaction.reference.ilike(f'%{reference}%'), Transaction.receipt.ilike(f'%{reference}%'))).first()
     return transaction
 
 def getCurrentTimestamp():
