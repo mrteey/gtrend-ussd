@@ -7,6 +7,7 @@ Flask-Migrate==3.1.0
 Flask-SQLAlchemy==2.5.1
 flask-marshmallow==0.13.0
 flask-cors
+marshmallow-sqlalchemy
 greenlet==1.1.0
 gunicorn==20.1.0
 idna==3.2
