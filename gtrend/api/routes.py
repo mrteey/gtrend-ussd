@@ -52,11 +52,13 @@ def confirm():
 def make_payment():
     data = request.json
     agent = get_user(data.get('phone'))
+    treference = getCurrentTimestamp()
+    tid = "GlobalTrend"
     if agent and agent.is_verified(data.get('pin')):
-        payment = pay(agent.name, data.get('reference'), data.get('amount'), data.get('customer'), data.get('description'))
+        payment = pay(agent.name, data.get('reference'), data.get('amount'), data.get('customer'), data.get('description'), treference, tid)
         receipt = payment.get('billerReference')
         if receipt:
-            transaction = add_transaction(None, agent.id, data.get('reference'), receipt, data.get('description'), data.get('customer'), data.get('amount'), data.get('charges'), data.get('transaction_type'), getCurrentDate())
+            transaction = add_transaction(None, agent.id, data.get('reference'), receipt, data.get('description'), data.get('customer'), data.get('amount'), data.get('charges'), data.get('transaction_type'), treference, tid, getCurrentDate())
         return payment
     return {'message':'invalid credentials', 'status':'failed'}
 
@@ -130,15 +132,15 @@ def deposit(text, sessionId, phone):
     update_session(sessionId, 'finalpay')
     return response
 
-def pay(agent, reference, amount, customer, description):
+def pay(agent, reference, amount, customer, description, treference, tid):
     data = {
-            "AgentId":"GlobalTrend",
+            "AgentId":tid,
             "AgentName":agent,
             "reference": reference.replace('IN', ''),
             "Amount": amount,
             "Currency": "NGN",
             "type": 'invoice',
-            "TransactionReference": getCurrentTimestamp(),
+            "TransactionReference": treference,
             "RetrievalReferenceNumber": f"IN{reference.replace('IN', '')}",
             "MaskedPAN": "MaskedPAN",
             "CardScheme": "CardScheme",
@@ -156,11 +158,13 @@ def makePayment(pin, sessionId, phone):
     session = get_session(sessionId)
     pin = pin.split('*')[-1]
     agent = get_user(phone=phone)
+    treference = getCurrentTimestamp()
+    tid = "GlobalTrend"
     if agent.is_verified(pin):
-        payment = pay(agent.name, session.reference, session.customer, session.description)
+        payment = pay(agent.name, session.reference, session.customer, session.description, treference, tid)
         receipt = payment.get('billerReference')
         if receipt:
-            transaction = add_transaction(session.id, agent.id, session.reference, receipt, session.description, session.customer, session.amount, session.charges, session.transaction_type, getCurrentDate())
+            transaction = add_transaction(session.id, agent.id, session.reference, receipt, session.description, session.customer, session.amount, session.charges, session.transaction_type, treference, tid, getCurrentDate())
             update_session(sessionId, "completed")
             response = getReceipt(transaction)
         else:

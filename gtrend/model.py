@@ -41,6 +41,8 @@ class Transaction(db.Model):
     amount = db.Column(db.Integer)
     charges = db.Column(db.Integer)
     transaction_type = db.Column(db.String)
+    treference = db.Column(db.String)
+    tid = db.Column(db.String)
     customer = db.Column(db.String)
     description = db.Column(db.String)
     created_at = db.Column(db.String)
