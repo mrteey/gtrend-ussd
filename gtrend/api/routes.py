@@ -58,7 +58,7 @@ def make_payment():
         payment = pay(agent.name, data.get('reference'), data.get('amount'), data.get('customer'), data.get('description'), treference, tid)
         receipt = payment.get('billerReference')
         if receipt:
-            transaction = add_transaction(None, agent.id, data.get('reference'), receipt, data.get('description'), data.get('customer'), data.get('amount'), data.get('charges'), data.get('transaction_type'), treference, tid, getCurrentDate())
+            transaction = add_transaction(None, agent.id, data.get('reference'), receipt, data.get('description'), data.get('customer'), data.get('amount'), data.get('charges'), data.get('transaction_type'), treference, tid, getCurrentDate(True))
         return payment
     return {'message':'invalid credentials', 'status':'failed'}
 
@@ -164,7 +164,7 @@ def makePayment(pin, sessionId, phone):
         payment = pay(agent.name, session.reference, session.customer, session.description, treference, tid)
         receipt = payment.get('billerReference')
         if receipt:
-            transaction = add_transaction(session.id, agent.id, session.reference, receipt, session.description, session.customer, session.amount, session.charges, session.transaction_type, treference, tid, getCurrentDate())
+            transaction = add_transaction(session.id, agent.id, session.reference, receipt, session.description, session.customer, session.amount, session.charges, session.transaction_type, treference, tid, getCurrentDate(True))
             update_session(sessionId, "completed")
             response = getReceipt(transaction)
         else:

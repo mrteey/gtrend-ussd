@@ -33,8 +33,10 @@ def report(date=None):
     # if date:
     pass
 
-def getCurrentDate():
+def getCurrentDate(with_time=False):
     date = datetime.datetime.now()
+    if with_time:
+        return date.strftime("%Y-%m-%d - %H:%M")
     return date.strftime("%Y-%m-%d")
 
 def getReceipt(t):
