@@ -65,9 +65,14 @@ def make_payment():
 @api.route('generate-receipt', methods=['POST'])
 def generate_receipt():
     reference = request.json.get('reference')
-    schema = TransactionSchema()
+    transchema = TransactionSchema()
+    userschema = UserSchema()
     transaction = getTransaction(reference)
-    return schema.jsonify(transaction)
+    agent = get_user(id=transaction.agent_id)
+    agent = userschema.dump(agent)
+    transaction = transchema.dump(transaction)
+    transaction['agent'] = agent
+    return transaction
                 
 def start(sessionId, phone, name):
     add_session(sessionId)

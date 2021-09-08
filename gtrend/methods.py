@@ -25,8 +25,10 @@ def update_session(session_id, stage, **kwargs):
 def get_session(session_id):
     return Sessions.query.filter_by(session_id=session_id).first()
 
-def get_user(phone):
-    return User.query.filter(User.phone.ilike(f'%{phone[1:]}%')).first()
+def get_user(phone=None, id=None):
+    if phone:
+        return User.query.filter(User.phone.ilike(f'%{phone[1:]}%')).first()
+    return User.query.filter(User.id==id).first()
 
 
 def report(date=None):
