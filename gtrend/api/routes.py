@@ -55,7 +55,7 @@ def make_payment():
     treference = getCurrentTimestamp()
     tid = "GlobalTrend"
     if agent and agent.is_verified(data.get('pin')):
-        payment = pay(agent.name, data.get('reference'), data.get('amount'), data.get('customer'), data.get('description'), treference, tid)
+        payment = pay(f"{agent.name} - GlobalTrend", data.get('reference'), data.get('amount'), data.get('customer'), data.get('description'), treference, tid)
         print(payment)
         receipt = payment.get('billerReference')
         if receipt:
