@@ -153,7 +153,7 @@ def pay(agent, reference, amount, customer, description, treference, tid):
             "CardScheme": "CardScheme",
             "CustomerName": customer,
             "StatusCode": "200",
-            "StatusDescription": description,
+            "StatusDescription": "description",
             "STAN": "STAN",
             "CardExpiry": "CardExpiry",
             "PaymentDate": getCurrentDate()
