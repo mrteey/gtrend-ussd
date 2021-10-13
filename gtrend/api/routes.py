@@ -7,8 +7,8 @@ from flask import Blueprint, request, render_template, redirect, url_for
 import requests
 
 from gtrend import app
-from gtrend.methods import add_session, update_session, get_session, get_user, add_transaction, getCurrentDate, getReceipt, getTransaction, getCharges, getCurrentTimestamp
-from gtrend.marshmallow import TransactionSchema, UserSchema
+from gtrend.methods import add_session, update_session, get_session, get_user, add_transaction, getCurrentDate, getReceipt, getTransaction, getCharges, getCurrentTimestamp, getReport, getAgents, addAgent
+from gtrend.marshmallow import TransactionSchema, UserSchema, TransactionCustomSchema
 
 api = Blueprint('api', __name__, url_prefix='/api')
 
@@ -75,6 +75,29 @@ def generate_receipt():
     transaction = transchema.dump(transaction)
     transaction['agent'] = agent
     return transaction
+
+@api.route('generate-report', methods=['POST'])
+def generateReport():
+    data = request.json
+    # print(data)
+    transchema = TransactionCustomSchema()
+    transchemas = TransactionSchema(many=True)
+    report = getReport(**data)
+    x = transchema.dump(report[0])
+    y = transchemas.dump(report[1])
+    report = {'report':y, 'summary':x}
+    return report
+
+@api.route('agents', methods=['GET','POST'])
+def agents():
+    if request.method == 'POST':
+        agentschema = UserSchema()
+        data = request.json
+        agent = addAgent(**data)
+        return agentschema.jsonify(agent)
+    agentschema = UserSchema(many=True)
+    _agents = getAgents()
+    return agentschema.jsonify(_agents)
                 
 def start(sessionId, phone, name):
     add_session(sessionId)

@@ -19,9 +19,12 @@ class TransactionSchema(ma.SQLAlchemyAutoSchema):
        model = Transaction
    include_fk = True #This includes foreignkeys
 
+class TransactionCustomSchema(ma.Schema):
+   class Meta:
+       fields = ("total", "charges", "transactions")
+
 class UserSchema(ma.SQLAlchemyAutoSchema):
    class Meta:
        model = User
    include_fk = True #This includes foreignkeys
 #    books = ma.Nested("BookSchema", many=True)
-        
