@@ -58,14 +58,10 @@ def getCharges(amount):
         return 30
     elif amount <= 1000:
         return 50
-    elif amount <= 10000:
-        return 100
     elif amount <= 20000:
-        return 150
-    elif amount <= 200000:
-        return 200
+        return 100
     else:
-        return 300
+        return 200
 
 def getTransaction(reference):
     # reference can either be invoice reference or receipt number
