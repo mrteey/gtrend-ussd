@@ -70,11 +70,19 @@ def generate_receipt():
     transchema = TransactionSchema()
     userschema = UserSchema()
     transaction = getTransaction(reference)
-    agent = get_user(id=transaction.agent_id)
-    agent = userschema.dump(agent)
-    transaction = transchema.dump(transaction)
-    transaction['agent'] = agent
-    return transaction
+    if transaction:
+        agent = get_user(id=transaction.agent_id)
+        agent = userschema.dump(agent)
+        transaction = transchema.dump(transaction)
+        transaction['agent'] = agent
+        return transaction
+    # TODO: Remove later after fixing transaction issues
+    invoice = getInvoice(reference)
+    if invoice:
+        agent = getAgents()[0]
+        agent = userschema.dump(agent)
+        invoice['agent'] = agent
+        return invoice
 
 @api.route('generate-report', methods=['POST'])
 def generateReport():
