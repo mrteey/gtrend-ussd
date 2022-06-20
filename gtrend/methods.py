@@ -4,6 +4,7 @@ from sqlalchemy import func, or_, and_
 
 def add_transaction(session_id, agent_id, reference, receipt, description, customer, amount, charges, transaction_type, treference, tid, created_at):
     new_transaction = Transaction(session_id=session_id, agent_id=agent_id, receipt=receipt, description=description, customer=customer, reference=reference, charges=charges, amount=amount, transaction_type=transaction_type, treference=treference, tid=tid, created_at=created_at)
+    new_transaction.id = Transaction.query.count()+1
     db.session.add(new_transaction)
     db.session.commit()
     return new_transaction
