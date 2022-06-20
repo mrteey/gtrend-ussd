@@ -76,7 +76,7 @@ def generate_receipt():
         transaction = transchema.dump(transaction)
         transaction['agent'] = agent
         return transaction
-    # TODO: Remove later after fixing transaction issues
+    
     invoice = getInvoice(reference)
     if invoice:
         agent = getAgents()[0]
